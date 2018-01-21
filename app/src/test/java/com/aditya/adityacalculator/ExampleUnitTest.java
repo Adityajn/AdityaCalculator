@@ -1,4 +1,4 @@
-package com.aditya.adityacalc;
+package com.aditya.adityacalculator;
 
 import org.junit.Test;
 

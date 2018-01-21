@@ -1,11 +1,12 @@
-package com.aditya.adityacalc;
-
+package com.aditya.adityacalculator;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import java.math.*;
+import java.text.DecimalFormat;
 
 public class Home extends AppCompatActivity {
 
@@ -14,11 +15,14 @@ public class Home extends AppCompatActivity {
     int opdone = 0;
     boolean screenCleared = true;
     double prevValue=0.0;
+    String advOp = "=";
+    DecimalFormat df;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        df = new DecimalFormat("#.###");
 
         screen = (EditText) findViewById(R.id.screen);
         Button one = (Button)findViewById(R.id.one);
@@ -38,6 +42,10 @@ public class Home extends AppCompatActivity {
         Button mul = (Button)findViewById(R.id.mul);
         Button div = (Button)findViewById(R.id.div);
         Button eq = (Button)findViewById(R.id.equal);
+        Button sin = (Button)findViewById(R.id.sin);
+        Button cos = (Button)findViewById(R.id.cos);
+        Button tan = (Button)findViewById(R.id.tan);
+        Button sqrt = (Button)findViewById(R.id.sqrt);
 
         Button del = (Button)findViewById(R.id.del);
         del.setOnClickListener(new View.OnClickListener() {
@@ -145,19 +153,45 @@ public class Home extends AppCompatActivity {
                 equal();
             }
         });
+
+        sin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                performOp("sin");
+            }
+        });
+        cos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                performOp("cos");
+            }
+        });
+        tan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                performOp("tan");
+            }
+        });
+        sqrt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                performOp("sqrt");
+            }
+        });
+
     }
 
     String getEquation() {
         String eq = "";
 
         if ((prevValue == Math.floor(prevValue)) && !Double.isInfinite(prevValue))
-        { eq = eq + (int)prevValue; } else { eq = eq + prevValue; }
+        { eq = eq + (int)prevValue; } else { eq = eq + df.format(prevValue); }
 
         eq = eq  + currOp ;
 
         double val= getScreenValue();
         if ((val == Math.floor(val)) && !Double.isInfinite(val)) { eq = eq +(int)val;}
-        else { eq = eq +  val;}
+        else { eq = eq +  df.format(val);}
 
         return eq;
     }
@@ -166,7 +200,29 @@ public class Home extends AppCompatActivity {
         if(currOp.equals("=")){
             return;
         }
-        String equation=getEquation();
+        String equation;
+        if(!advOp.equals("=") && !screen.getText().toString().equals("") ){
+            switch (advOp){
+                case "sin":
+                    prevValue  = Math.sin(getScreenValue()*Math.PI/180);
+                    break;
+                case "cos":
+                    prevValue = Math.cos(getScreenValue()*Math.PI/180);
+                    break;
+                case "tan":
+                    prevValue = Math.tan(getScreenValue()*Math.PI/180);
+                    break;
+                case "sqrt":
+                    prevValue =Math.sqrt(getScreenValue());
+                    break;
+            }
+            currOp = "=";
+            equation = advOp + "(" + df.format(getScreenValue()) + ")";
+            advOp = "=";
+        }
+        else {
+            equation = getEquation();
+        }
         switch (currOp) {
             case "+":
                 prevValue = prevValue + getScreenValue();
@@ -183,20 +239,50 @@ public class Home extends AppCompatActivity {
             default:
                 break;
         }
-
-        if ((prevValue == Math.floor(prevValue)) && !Double.isInfinite(prevValue)) {
-            screen.setText(equation+"\n"+(int)prevValue);
-
-        }
-        else{
-            screen.setText(equation+"\n"+prevValue + "");
-        }
+        screen.setText(equation+"\n"+df.format(prevValue)+ "");
         opdone++;
         currOp="=";
         screenCleared=false;
     }
 
     void performOp(String op){
+        if(!advOp.equals("=") && !screen.getText().toString().equals("") ){
+            advOp = "=";
+            switch (advOp){
+                case "sin":
+                    prevValue  = Math.sin(getScreenValue()*Math.PI/180);
+                    break;
+                case "cos":
+                    prevValue = Math.cos(getScreenValue()*Math.PI/180);
+                    break;
+                case "tan":
+                    prevValue = Math.tan(getScreenValue()*Math.PI/180);
+                    break;
+                case "sqrt":
+                    prevValue =Math.sqrt(getScreenValue());
+                    break;
+            }
+            currOp = op;
+            screenCleared = false;
+            return;
+        }
+        switch (op){
+            case "sin":
+                advOp = "sin";break;
+            case "cos":
+                advOp = "cos";break;
+            case "tan":
+                advOp = "tan";break;
+            case "sqrt":
+                advOp = "sqrt";break;
+            default:
+                break;
+        }
+
+        if(!advOp.equals("=")){
+            currOp="=";
+        }
+
         switch (currOp) {
             case "+":
                 prevValue = prevValue + getScreenValue();
@@ -216,6 +302,7 @@ public class Home extends AppCompatActivity {
                 }
                 break;
         }
+
         currOp=op;
         screenCleared = false;
     }

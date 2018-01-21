@@ -1,4 +1,4 @@
-package com.aditya.adityacalc;
+package com.aditya.adityacalculator;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.aditya.adityacalc", appContext.getPackageName());
+        assertEquals("com.aditya.adityacalculator", appContext.getPackageName());
     }
 }
